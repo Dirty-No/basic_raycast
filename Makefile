@@ -6,7 +6,7 @@
 #    By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/11/05 10:47:14 by smaccary          #+#    #+#              #
-#    Updated: 2020/08/06 20:26:54 by smaccary         ###   ########.fr        #
+#    Updated: 2020/08/08 13:56:53 by smaccary         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,7 +41,7 @@ LIB_ARG =
 
 FRAMEWORKS = 
 
-LINKS = 
+LINKS = -pthread
 
 UNAME = $(shell uname)
 
@@ -49,7 +49,7 @@ ifeq ($(UNAME),Darwin)
 	MLX_PATH = $(MLX_OPENGL_PATH)
 	MLX_NAME = libmlx.dylib
 	MLX_LIB = $(MLX_PATH)/$(MLX_NAME)
-	LINKS = -L$(MLX_PATH)/
+	LINKS += -L$(MLX_PATH)/
 	FRAMEWORKS += -framework OpenGL -framework Appkit
 	INCLUDES += -I$(MLX_OPENGL_PATH)
 	LOAD_DYLIB = install_name_tool -change $(MLX_NAME) $(DIR)/$(MLX_LIB) $(NAME)

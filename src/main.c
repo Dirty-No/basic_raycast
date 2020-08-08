@@ -6,7 +6,7 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/06 15:53:41 by smaccary          #+#    #+#             */
-/*   Updated: 2020/08/06 20:59:56 by smaccary         ###   ########.fr       */
+/*   Updated: 2020/08/08 14:09:08 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,16 +94,19 @@ void	*fill_next_cell_rcolor(t_game *game)
 {
 	static int		x = 0;
 	static int		y = 0;
-	static int		increment = 1;
+	static int		x_increment = 1;
+	static int		y_increment = 1;
 
 	fill_cell(game->img_ptr, x, y, ((unsigned int)get_random_int()) % (unsigned int)0xFFFFFF);
-	x += increment;
+	x += x_increment;
 	if (x > W_WIDTH / CELL_SIZE || x < 0)
 	{
-		increment *= -1;
-		x += increment;
-		y++;
+		x_increment *= -1;
+		x += x_increment;
+		y += y_increment;
 	}
+	if (y > W_HEIGHT / CELL_SIZE)
+		y_increment *= -1;
 	return (NULL);
 }
 
@@ -111,16 +114,19 @@ void	*fill_next_cell_rcolor_r(t_game *game)
 {
 	static int		x = (W_WIDTH - 1) / CELL_SIZE;
 	static int		y = (W_HEIGHT - 1) / CELL_SIZE;
-	static int		increment = -1;
+	static int		x_increment = -1;
+	static int		y_increment = -1;
 
 	fill_cell(game->img_ptr, x, y, ((unsigned int)get_random_int()) % (unsigned int)0xFFFFFF);
-	x += increment;
+	x += x_increment;
 	if (x > W_WIDTH / CELL_SIZE || x < 0)
 	{
-		increment *= -1;
-		x += increment;
-		y--;
+		x_increment *= -1;
+		x += x_increment;
+		y += y_increment;
 	}
+	if (y > W_HEIGHT / CELL_SIZE)
+		y_increment *= -1;
 	return (NULL);
 }
 
@@ -210,7 +216,11 @@ int		main(void)
 	
 	init_display(&game);
 	draw_grid(game.img, 0xFF0000);
-	draw_grid(game.img + 1, 0xFF);
+/*
+** 	int i =-1;
+** 	while (++i < W_HEIGHT * W_WIDTH / CELL_SIZE)
+** 		fill_next_cell_rcolor(&game);
+*/
 	mlx_loop_hook(game.mlx, loop_handler, (void *)&game);
 	mlx_key_hook(game.win, key_handler, &game);
 	mlx_hook(game.win, DESTROY_NOTIFY, STRUCTURE_NOTIFY_MASK, leave, &game);
