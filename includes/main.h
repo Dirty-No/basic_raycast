@@ -6,7 +6,7 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/06 15:55:40 by smaccary          #+#    #+#             */
-/*   Updated: 2020/08/06 20:37:13 by smaccary         ###   ########.fr       */
+/*   Updated: 2020/08/08 20:19:47 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@
 # include <pthread.h>
 
 # define W_WIDTH	800
-# define W_HEIGHT	800
+# define W_HEIGHT	1200
 # define W_TITLE	"window title"
 
 /*

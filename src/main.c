@@ -6,7 +6,7 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/06 15:53:41 by smaccary          #+#    #+#             */
-/*   Updated: 2020/08/08 14:09:08 by smaccary         ###   ########.fr       */
+/*   Updated: 2020/08/08 20:29:47 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,18 +34,23 @@ void	draw_grid(t_data *data, int color)
 {
 	int	x;
 	int	y;
-	
+
+	x = 0;
+	while (x < data->width)
+	{
+		y = -1;
+		while (++y < data->height)
+			my_pixel_put(data, x, y, color);
+		x += CELL_SIZE;
+	}
 	y = 0;
 	while (y < data->height)
 	{
 		x = -1;
 		while (++x < data->width)
-		{
 			my_pixel_put(data, x, y, color);
-			my_pixel_put(data, y, x, color);
-		}
 		y += CELL_SIZE;
-	}
+	}	
 }
 
 void	fill_cell(t_data *data, int x, int y, int color)
