@@ -6,7 +6,7 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/06 15:53:41 by smaccary          #+#    #+#             */
-/*   Updated: 2020/08/08 20:29:47 by smaccary         ###   ########.fr       */
+/*   Updated: 2020/08/09 18:09:05 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,9 +79,8 @@ void	copy_image(t_data *src, t_data *dst)
 	int	i;
 
 	i = -1;
-	while (++i < dst->width * dst->height * dst->bits_per_pixel / 8
-			&& i < src->width * src->height * src->bits_per_pixel / 8)
-		(dst->addr)[i] = (src->addr)[i];
+	while (++i < dst->width * dst->height + 38400)
+		((int *)dst->addr)[i] = ((int *)src->addr)[i];
 }
 
 int	get_random_int()
@@ -138,22 +137,14 @@ void	*fill_next_cell_rcolor_r(t_game *game)
 void	*refresh(t_game *game)
 {
 	static clock_t	t0 = 0;
+	static int i = 0;
 
 	if (game->frame_ready && (!FRAME_CAP
 	|| (double)(clock() - t0) > (double)CLOCKS_PER_SEC / (double)FRAME_CAP))
 	{
 		mlx_put_image_to_window(game->mlx, game->win,
 								game->img_ptr->mlx_img, 0, 0);
-		if (game->img_ptr == game->img)
-		{
-			copy_image(game->img, game->img + 1);
-			game->img_ptr++;
-		}
-		else
-		{
-			copy_image(game->img + 1, game->img);
-			game->img_ptr--;
-		}
+		game->img_ptr = game->img + i++ % 2;
 		t0 = clock();
 		game->frame_ready = 0;
 	}
@@ -162,14 +153,16 @@ void	*refresh(t_game *game)
 
 int		loop_handler(t_game *game)
 {
-	pthread_t		threads[3];
+	//pthread_t		threads[3];
 
 	if (!game->frame_ready)
 	{
-		pthread_create(threads, NULL, (void *(*)(void *))fill_next_cell_rcolor, game);
-		pthread_create(threads + 1, NULL, (void *(*)(void *))fill_next_cell_rcolor_r, game);
-		pthread_join(threads[0], NULL);
-		pthread_join(threads[1], NULL);
+/*
+** 		pthread_create(threads, NULL, (void *(*)(void *))fill_next_cell_rcolor, game);
+** 		pthread_create(threads + 1, NULL, (void *(*)(void *))fill_next_cell_rcolor_r, game);
+** 		pthread_join(threads[0], NULL);
+** 		pthread_join(threads[1], NULL);
+*/
 		game->frame_ready = 1;
 	}
 	refresh(game);
@@ -220,12 +213,9 @@ int		main(void)
 	t_game	game;
 	
 	init_display(&game);
-	draw_grid(game.img, 0xFF0000);
-/*
-** 	int i =-1;
-** 	while (++i < W_HEIGHT * W_WIDTH / CELL_SIZE)
-** 		fill_next_cell_rcolor(&game);
-*/
+	draw_grid(game.img, 0xFF);
+	draw_grid(game.img + 1, 0xFF0000);
+	copy_image(game.img, game.img + 1);
 	mlx_loop_hook(game.mlx, loop_handler, (void *)&game);
 	mlx_key_hook(game.win, key_handler, &game);
 	mlx_hook(game.win, DESTROY_NOTIFY, STRUCTURE_NOTIFY_MASK, leave, &game);
