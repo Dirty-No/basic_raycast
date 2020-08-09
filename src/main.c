@@ -6,7 +6,7 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/06 15:53:41 by smaccary          #+#    #+#             */
-/*   Updated: 2020/08/09 18:09:05 by smaccary         ###   ########.fr       */
+/*   Updated: 2020/08/09 18:40:19 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,8 +79,9 @@ void	copy_image(t_data *src, t_data *dst)
 	int	i;
 
 	i = -1;
-	while (++i < dst->width * dst->height + 38400)
-		((int *)dst->addr)[i] = ((int *)src->addr)[i];
+	while (++i < (dst->width * dst->height * dst->bits_per_pixel / 8) * 1.04
+			&& i < (src->width * src->height * src->bits_per_pixel / 8) * 1.04)
+		(dst->addr)[i] = (char)(src->addr)[i];
 }
 
 int	get_random_int()
