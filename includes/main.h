@@ -6,7 +6,7 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/06 15:55:40 by smaccary          #+#    #+#             */
-/*   Updated: 2020/08/08 20:19:47 by smaccary         ###   ########.fr       */
+/*   Updated: 2020/08/10 17:59:04 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,11 @@ typedef struct	s_game
 {
 	void		*mlx;
 	void		*win;
+	double			x;
+	double			y;
+	double			dir_x;
+	double			dir_y;
+	int			dist;
 	t_data  	img[2];
 	t_data  	*img_ptr;
 	int			frame_ready;

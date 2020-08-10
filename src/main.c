@@ -6,11 +6,45 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/06 15:53:41 by smaccary          #+#    #+#             */
-/*   Updated: 2020/08/09 18:40:19 by smaccary         ###   ########.fr       */
+/*   Updated: 2020/08/10 18:45:12 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
+#include <math.h>
+
+#define mapWidth 24
+#define mapHeight 24
+#define FOV 60
+#define ANGLE_INC FOV/W_WIDTH
+
+int worldMap[mapHeight][mapWidth]=
+{
+  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,2,2,2,2,2,0,0,0,0,3,0,3,0,3,0,0,0,1},
+  {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,3,0,0,0,3,0,0,0,1},
+  {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,2,2,0,2,2,0,0,0,0,3,0,3,0,3,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,4,0,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,4,0,0,0,0,5,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,4,0,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,4,0,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
+};
 
 /*
 ** THIS IS HOW YOU DRAW INSIDE AN MLX IMAGE 
@@ -79,8 +113,8 @@ void	copy_image(t_data *src, t_data *dst)
 	int	i;
 
 	i = -1;
-	while (++i < (dst->width * dst->height * dst->bits_per_pixel / 8) * 1.04
-			&& i < (src->width * src->height * src->bits_per_pixel / 8) * 1.04)
+	while (++i < (dst->width * dst->height * dst->bits_per_pixel / 8)
+			&& i < (src->width * src->height * src->bits_per_pixel / 8))
 		(dst->addr)[i] = (char)(src->addr)[i];
 }
 
@@ -95,44 +129,86 @@ int	get_random_int()
 ** (DOUBLE BUFFERING) 
 */
 
-void	*fill_next_cell_rcolor(t_game *game)
-{
-	static int		x = 0;
-	static int		y = 0;
-	static int		x_increment = 1;
-	static int		y_increment = 1;
 
-	fill_cell(game->img_ptr, x, y, ((unsigned int)get_random_int()) % (unsigned int)0xFFFFFF);
-	x += x_increment;
-	if (x > W_WIDTH / CELL_SIZE || x < 0)
+void	minimap(t_game *game)
+{
+	int		x;
+	int		y;
+	static int		rgb[5] = {0xFFFFFF,0xFF0000,0xFF00,0xFF, 0xFFFF};
+
+	y = -1;
+	while (++y < mapHeight)
 	{
-		x_increment *= -1;
-		x += x_increment;
-		y += y_increment;
+		x = -1;
+		while (++x < mapWidth)
+			fill_cell(game->img_ptr, x, y, rgb[worldMap[x][y]]);
 	}
-	if (y > W_HEIGHT / CELL_SIZE)
-		y_increment *= -1;
-	return (NULL);
 }
 
-void	*fill_next_cell_rcolor_r(t_game *game)
+void	rotate_vect(double *x, double *y, double angle)
 {
-	static int		x = (W_WIDTH - 1) / CELL_SIZE;
-	static int		y = (W_HEIGHT - 1) / CELL_SIZE;
-	static int		x_increment = -1;
-	static int		y_increment = -1;
+	double old_x;
+	double old_y;
 
-	fill_cell(game->img_ptr, x, y, ((unsigned int)get_random_int()) % (unsigned int)0xFFFFFF);
-	x += x_increment;
-	if (x > W_WIDTH / CELL_SIZE || x < 0)
+	old_x = *x;
+	old_y = *y;
+	*x = old_x * cos(angle) - old_y * sin(angle);
+	*y = old_x * sin(angle) + old_y * cos(angle);
+	printf("ox %lf oy %lf x %lf y %lf\n", old_x, old_y, *x, *y);
+}
+
+/*
+** void	raycast(t_game *game)
+** {
+** 	double		x;
+** 	double		y;
+** 	double		dir_x;
+** 	double 	dir_y;
+** 	double		step_x;
+** 	double		step_y;
+** 	//int 	dist;
+** 	//static int		rgb[5] = {0xFFFFFF,0xFF0000,0xFF00,0xFF, 0xFFFF};
+** 	int		col = -1;
+** 
+** 	dir_x = game->dir_x;
+** 	dir_y = game->dir_x;
+** 	x = game->x;
+** 	y = game->y;
+** 	while (++col < W_WIDTH)
+** 	{
+** 		step_x = (dir_x >= 0) ? 0.01 : -0.1;
+** 		step_y = (dir_y >= 0) ? 0.01 : -0.1;
+** 		fill_cell(game->img_ptr, x, y, 0xFF00FF);
+** 		if (worldMap[(int)x][(int)y])
+** 		{
+** 			return ;
+** 		}
+** 		x += step_x;
+** 		y += step_y;
+** 		rotate_vect(&dir_x, &dir_y, ANGLE_INC);
+** 	}
+** 
+** }
+*/
+
+void	raycast(t_game *game)
+{
+	double x;
+	double	y;
+	int i;
+
+	x = game->x;
+	y = game->y;
+	//printf("%f\n",game->x + game->dir_x * 100);
+
+	i = -1;
+	while (++i < 100)
 	{
-		x_increment *= -1;
-		x += x_increment;
-		y += y_increment;
+		my_pixel_put(game->img_ptr, (int)x, (int)y, 0xFFFFFF);
+		x += game->dir_x;
+		y += game->dir_y;
+		//printf("%lf %lf\n", x ,y);
 	}
-	if (y > W_HEIGHT / CELL_SIZE)
-		y_increment *= -1;
-	return (NULL);
 }
 
 void	*refresh(t_game *game)
@@ -158,13 +234,10 @@ int		loop_handler(t_game *game)
 
 	if (!game->frame_ready)
 	{
-/*
-** 		pthread_create(threads, NULL, (void *(*)(void *))fill_next_cell_rcolor, game);
-** 		pthread_create(threads + 1, NULL, (void *(*)(void *))fill_next_cell_rcolor_r, game);
-** 		pthread_join(threads[0], NULL);
-** 		pthread_join(threads[1], NULL);
-*/
+		//minimap(game);
+		raycast(game);
 		game->frame_ready = 1;
+		rotate_vect(&game->dir_x, &game->dir_y, 1);
 	}
 	refresh(game);
 	return (0);
@@ -213,10 +286,14 @@ int		main(void)
 {
 	t_game	game;
 	
+	game = (t_game){0};
+	game.x = W_WIDTH / 2;
+	game.y = W_HEIGHT / 2;
 	init_display(&game);
 	draw_grid(game.img, 0xFF);
 	draw_grid(game.img + 1, 0xFF0000);
-	copy_image(game.img, game.img + 1);
+	game.dir_x = -1;
+	game.dir_y = 0;
 	mlx_loop_hook(game.mlx, loop_handler, (void *)&game);
 	mlx_key_hook(game.win, key_handler, &game);
 	mlx_hook(game.win, DESTROY_NOTIFY, STRUCTURE_NOTIFY_MASK, leave, &game);
