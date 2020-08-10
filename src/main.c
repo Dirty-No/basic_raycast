@@ -6,7 +6,7 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/06 15:53:41 by smaccary          #+#    #+#             */
-/*   Updated: 2020/08/10 18:45:12 by smaccary         ###   ########.fr       */
+/*   Updated: 2020/08/10 18:59:08 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,7 +154,7 @@ void	rotate_vect(double *x, double *y, double angle)
 	old_y = *y;
 	*x = old_x * cos(angle) - old_y * sin(angle);
 	*y = old_x * sin(angle) + old_y * cos(angle);
-	printf("ox %lf oy %lf x %lf y %lf\n", old_x, old_y, *x, *y);
+	//printf("ox %lf oy %lf x %lf y %lf\n", old_x, old_y, *x, *y);
 }
 
 /*
@@ -204,7 +204,7 @@ void	raycast(t_game *game)
 	i = -1;
 	while (++i < 100)
 	{
-		my_pixel_put(game->img_ptr, (int)x, (int)y, 0xFFFFFF);
+		my_pixel_put(game->img_ptr, (int)x, (int)y, (int)sqrt(((x - game->x) * (x - game->x) + (y - game->y) * (y - game->y))) * 500 % 0xFFFFFF);
 		x += game->dir_x;
 		y += game->dir_y;
 		//printf("%lf %lf\n", x ,y);
