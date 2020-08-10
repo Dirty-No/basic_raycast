@@ -6,7 +6,7 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/06 15:53:41 by smaccary          #+#    #+#             */
-/*   Updated: 2020/08/10 18:59:08 by smaccary         ###   ########.fr       */
+/*   Updated: 2020/08/10 19:12:19 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,40 +157,40 @@ void	rotate_vect(double *x, double *y, double angle)
 	//printf("ox %lf oy %lf x %lf y %lf\n", old_x, old_y, *x, *y);
 }
 
-/*
-** void	raycast(t_game *game)
-** {
-** 	double		x;
-** 	double		y;
-** 	double		dir_x;
-** 	double 	dir_y;
-** 	double		step_x;
-** 	double		step_y;
-** 	//int 	dist;
-** 	//static int		rgb[5] = {0xFFFFFF,0xFF0000,0xFF00,0xFF, 0xFFFF};
-** 	int		col = -1;
-** 
-** 	dir_x = game->dir_x;
-** 	dir_y = game->dir_x;
-** 	x = game->x;
-** 	y = game->y;
-** 	while (++col < W_WIDTH)
-** 	{
-** 		step_x = (dir_x >= 0) ? 0.01 : -0.1;
-** 		step_y = (dir_y >= 0) ? 0.01 : -0.1;
-** 		fill_cell(game->img_ptr, x, y, 0xFF00FF);
-** 		if (worldMap[(int)x][(int)y])
-** 		{
-** 			return ;
-** 		}
-** 		x += step_x;
-** 		y += step_y;
-** 		rotate_vect(&dir_x, &dir_y, ANGLE_INC);
-** 	}
-** 
-** }
-*/
 
+ void	raycast(t_game *game)
+ {
+ 	double		x;
+ 	double		y;
+ 	double		dir_x;
+ 	double 	dir_y;
+ 	double		step_x;
+ 	double		step_y;
+ 	//int 	dist;
+ 	//static int		rgb[5] = {0xFFFFFF,0xFF0000,0xFF00,0xFF, 0xFFFF};
+ 	int		col = -1;
+ 
+ 	dir_x = game->dir_x;
+ 	dir_y = game->dir_x;
+ 	while (++col < W_WIDTH)
+ 	{
+		x = game->x;
+ 		y = game->y;
+		step_x = (dir_x >= 0) ? 0.1 : -0.1;
+		step_y = (dir_y >= 0) ? 0.1 : -0.1;
+		while (!worldMap[(int)x][(int)y])
+		{
+			fill_cell(game->img_ptr, x, y, 0xFF00FF);
+			x += step_x;
+			y += step_y;
+		}
+		rotate_vect(&dir_x, &dir_y, 0.1);
+		printf("%lf %lf\n", dir_x, dir_y);
+ 	}
+ 
+ }
+
+/*
 void	raycast(t_game *game)
 {
 	double x;
@@ -210,7 +210,7 @@ void	raycast(t_game *game)
 		//printf("%lf %lf\n", x ,y);
 	}
 }
-
+*/
 void	*refresh(t_game *game)
 {
 	static clock_t	t0 = 0;
@@ -234,10 +234,10 @@ int		loop_handler(t_game *game)
 
 	if (!game->frame_ready)
 	{
-		//minimap(game);
+		minimap(game);
 		raycast(game);
 		game->frame_ready = 1;
-		rotate_vect(&game->dir_x, &game->dir_y, 1);
+		rotate_vect(&game->dir_x, &game->dir_y, 0.1);
 	}
 	refresh(game);
 	return (0);
@@ -287,8 +287,8 @@ int		main(void)
 	t_game	game;
 	
 	game = (t_game){0};
-	game.x = W_WIDTH / 2;
-	game.y = W_HEIGHT / 2;
+	game.x = mapWidth / 2;
+	game.y = mapHeight / 2;
 	init_display(&game);
 	draw_grid(game.img, 0xFF);
 	draw_grid(game.img + 1, 0xFF0000);
