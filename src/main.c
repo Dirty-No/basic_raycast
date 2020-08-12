@@ -13,12 +13,7 @@
 #include "main.h"
 #include <math.h>
 
-#define mapWidth 24
-#define mapHeight 24
-#define FOV 60
-#define ANGLE_INC FOV/W_WIDTH
-
-int worldMap[mapHeight][mapWidth]=
+int worldMap[mapWidth][mapHeight]=
 {
   {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
@@ -47,137 +42,28 @@ int worldMap[mapHeight][mapWidth]=
 };
 
 /*
-** THIS IS HOW YOU DRAW INSIDE AN MLX IMAGE 
-*/
-
-void    my_pixel_put(t_data *data, int x, int y, int color)
+void	raycast(t_game *game)
 {
-	char    *dst;
+	double		x;
+	double		y;
+	double		dir_x;
+	double 	dir_y;
+	double		step_x;
+	double		step_y;
+	//int 	dist;
+	//static int		rgb[5] = {0xFFFFFF,0xFF0000,0xFF00,0xFF, 0xFFFF};
+	int		col = -1;
 
-	if (x <= 0 || x >= data->width || y <= 0 || y >= data->height)
-		return ;
-	dst = data->addr + (y * data->line_length + x * data->bits_per_pixel / 8);
-	*(unsigned int *)dst = color;
-}
-
-/*
-** FUNCTION TO TEST IF EVERYTHING IS WORKING WELL 
-*/
-
-void	draw_grid(t_data *data, int color)
-{
-	int	x;
-	int	y;
-
-	x = 0;
-	while (x < data->width)
+	dir_x = game->dir_x;
+	dir_y = game->dir_x;
+	while (++col < W_WIDTH)
 	{
-		y = -1;
-		while (++y < data->height)
-			my_pixel_put(data, x, y, color);
-		x += CELL_SIZE;
-	}
-	y = 0;
-	while (y < data->height)
-	{
-		x = -1;
-		while (++x < data->width)
-			my_pixel_put(data, x, y, color);
-		y += CELL_SIZE;
-	}	
-}
-
-void	fill_cell(t_data *data, int x, int y, int color)
-{
-	int	start_x;
-	int	start_y;
-	
-	x *= CELL_SIZE;
-	y *= CELL_SIZE;
-	start_x = x;
-	start_y = y;
-	while (y < start_y + CELL_SIZE)
-	{
-		while (x < start_x + CELL_SIZE)
-		{
-			my_pixel_put(data, x, y, color);
-			x++;
-		}
-		y++;
-		x = start_x;
-	}
-}
-
-void	copy_image(t_data *src, t_data *dst)
-{
-	int	i;
-
-	i = -1;
-	while (++i < (dst->width * dst->height * dst->bits_per_pixel / 8)
-			&& i < (src->width * src->height * src->bits_per_pixel / 8))
-		(dst->addr)[i] = (char)(src->addr)[i];
-}
-
-int	get_random_int()
-{
-	srand(clock());
-	return ((rand() ^ (rand() << 15) ^ ((long long int) rand() << 30)));
-}
-
-/*
-** YOU SHOULD ALWAYS SWITCH BETWEEN TWO IMAGE BUFFERS TO PREVENT TEARING
-** (DOUBLE BUFFERING) 
-*/
-
-
-void	minimap(t_game *game)
-{
-	int		x;
-	int		y;
-	static int		rgb[5] = {0xFFFFFF,0xFF0000,0xFF00,0xFF, 0xFFFF};
-
-	y = -1;
-	while (++y < mapHeight)
-	{
-		x = -1;
-		while (++x < mapWidth)
-			fill_cell(game->img_ptr, x, y, rgb[worldMap[x][y]]);
-	}
-}
-
-void	rotate_vect(double *x, double *y, double angle)
-{
-	double old_x;
-	double old_y;
-
-	old_x = *x;
-	old_y = *y;
-	*x = old_x * cos(angle) - old_y * sin(angle);
-	*y = old_x * sin(angle) + old_y * cos(angle);
-	//printf("ox %lf oy %lf x %lf y %lf\n", old_x, old_y, *x, *y);
-}
-
-
- void	raycast(t_game *game)
- {
- 	double		x;
- 	double		y;
- 	double		dir_x;
- 	double 	dir_y;
- 	double		step_x;
- 	double		step_y;
- 	//int 	dist;
- 	//static int		rgb[5] = {0xFFFFFF,0xFF0000,0xFF00,0xFF, 0xFFFF};
- 	int		col = -1;
- 
- 	dir_x = game->dir_x;
- 	dir_y = game->dir_x;
- 	while (++col < W_WIDTH)
- 	{
 		x = game->x;
- 		y = game->y;
-		step_x = (dir_x >= 0) ? 0.1 : -0.1;
-		step_y = (dir_y >= 0) ? 0.1 : -0.1;
+		y = game->y;
+		//step_x = (dir_x >= 0) ? 0.1 : -0.1;
+		//step_y = (dir_y >= 0) ? 0.1 : -0.1;
+		step_x = dir_x * 0.1;
+		step_y = dir_y * 0.1;
 		while (!worldMap[(int)x][(int)y])
 		{
 			fill_cell(game->img_ptr, x, y, 0xFF00FF);
@@ -186,9 +72,74 @@ void	rotate_vect(double *x, double *y, double angle)
 		}
 		rotate_vect(&dir_x, &dir_y, 0.1);
 		printf("%lf %lf\n", dir_x, dir_y);
- 	}
- 
- }
+	}
+	fill_cell(game->img_ptr, game->x, game->y, 0xFF0000);
+}
+*/
+
+void	draw_col(t_data *data, int col, double dist, int wall_color)
+{
+	int	start_y;
+	int	end_y;
+	int	wall_size;
+	int	i;
+
+	if (dist == 0)
+		dist = 0.000000001;
+	wall_size = W_HEIGHT / dist;
+	start_y = W_HEIGHT / 2 - wall_size / 2;
+	end_y =  W_HEIGHT / 2 + wall_size / 2;
+	i = -1;
+	while (++i < W_HEIGHT)
+	{
+		if (0 <= i && i < start_y)
+			my_pixel_put(data, col, i, ROOF_COLOR);
+		else if (start_y <= i && i <= end_y)
+			my_pixel_put(data, col, i, wall_color);
+		else if (end_y < i && i < W_HEIGHT)
+			my_pixel_put(data, col, i, FLOOR_COLOR);
+	}
+}
+
+void	raycast(t_game *game)
+{
+	double		x;
+	double		y;
+	double		dir_x;
+	double 		dir_y;
+	double		step_x;
+	double		step_y;
+	double 		dist;
+	double		pxl_x;
+	double		pxl_y;
+	static int	rgb[6] = {0x0,0xFF0000,0xFF00,0xFF, 0xFFFF, 0xFF00FF};
+	int			col = -1;
+
+	dir_x = game->dir_x;
+	dir_y = game->dir_y;
+	rotate_vect(&dir_x, &dir_y, -FOV / 2);
+	while (++col < W_WIDTH)
+	{
+		x = game->x;
+		y = game->y;
+		//step_x = (dir_x >= 0) ? 0.1 : -0.1;
+		//step_y = (dir_y >= 0) ? 0.1 : -0.1;
+		step_x = dir_x * RAY_STEP;
+		step_y = dir_y * RAY_STEP;
+		while (!worldMap[(int)round(y)][(int)round(x)])
+		{
+			//fill_cell(game->img_ptr, x, y, 0xFF00FF);
+			get_grid_coord(x, y, &pxl_x, &pxl_y);
+			//my_pixel_put(&(game->minimap), pxl_x, pxl_y, 0xFFFFFF);
+			x += step_x;
+			y += step_y;
+		}
+		dist = my_dist(game->x, game->y, x, y);
+		draw_col(game->img_ptr, col, dist, rgb[worldMap[(int)round(y)][(int)round(x)]]);
+		rotate_vect(&dir_x, &dir_y, ANGLE_INC);
+		//printf("%lf %lf\n", dir_x, dir_y);
+	}
+}
 
 /*
 void	raycast(t_game *game)
@@ -211,22 +162,6 @@ void	raycast(t_game *game)
 	}
 }
 */
-void	*refresh(t_game *game)
-{
-	static clock_t	t0 = 0;
-	static int i = 0;
-
-	if (game->frame_ready && (!FRAME_CAP
-	|| (double)(clock() - t0) > (double)CLOCKS_PER_SEC / (double)FRAME_CAP))
-	{
-		mlx_put_image_to_window(game->mlx, game->win,
-								game->img_ptr->mlx_img, 0, 0);
-		game->img_ptr = game->img + i++ % 2;
-		t0 = clock();
-		game->frame_ready = 0;
-	}
-	return (NULL);
-}
 
 int		loop_handler(t_game *game)
 {
@@ -236,30 +171,12 @@ int		loop_handler(t_game *game)
 	{
 		minimap(game);
 		raycast(game);
+		draw_fov(game);
 		game->frame_ready = 1;
-		rotate_vect(&game->dir_x, &game->dir_y, 0.1);
+		//rotate_vect(&game->dir_x, &game->dir_y, 0.1);
 	}
 	refresh(game);
 	return (0);
-}
-
-void    init_data(t_data *data, void *mlx, int w, int h)
-{
-	data->mlx_img = mlx_new_image(mlx, w, h);
-	data->addr = mlx_get_data_addr(data->mlx_img, &(data->bits_per_pixel),
-								 &(data->line_length), &(data->endian));
-	data->width = w;
-	data->height = h;
-}
-
-void	init_display(t_game *game)
-{
-	game->mlx = mlx_init();
-	game->win = mlx_new_window(game->mlx, W_WIDTH, W_HEIGHT, W_TITLE);
-	game->img_ptr = game->img;
-	init_data(game->img, game->mlx, W_WIDTH, W_HEIGHT);
-	init_data(game->img + 1, game->mlx, W_WIDTH, W_HEIGHT);
-	game->frame_ready = 0;
 }
 
 void	clean_all(t_game *game)
@@ -279,6 +196,29 @@ int		key_handler(int keycode, t_game *game)
 {
 	if (keycode == ESC_KEY)
 		leave(game);
+	if (keycode == FORWARD_KEY)
+	{
+		game->x += SPEED * game->dir_x;
+		game->y += SPEED * game->dir_y;
+	}
+	if (keycode == BACKWARD_KEY)
+	{
+		game->x -= SPEED * game->dir_x;
+		game->y -= SPEED * game->dir_y;
+	}
+	if (keycode == RIGHT_KEY)
+	{
+		game->y += SPEED * game->dir_x;
+		game->x -= SPEED * game->dir_y;	}
+	if (keycode == LEFT_KEY)
+	{
+		game->y -= SPEED * game->dir_x;
+		game->x += SPEED * game->dir_y;
+	}
+	if (keycode == ARROW_RIGHT_KEY)
+		rotate_vect(&(game->dir_x), &(game->dir_y), TURN_ANGLE);
+	if (keycode == ARROW_LEFT_KEY)
+		rotate_vect(&(game->dir_x), &(game->dir_y), -TURN_ANGLE);
 	return (0);
 }
 
@@ -292,8 +232,9 @@ int		main(void)
 	init_display(&game);
 	draw_grid(game.img, 0xFF);
 	draw_grid(game.img + 1, 0xFF0000);
-	game.dir_x = -1;
+	game.dir_x = 1;
 	game.dir_y = 0;
+	mlx_do_key_autorepeaton(game.mlx);
 	mlx_loop_hook(game.mlx, loop_handler, (void *)&game);
 	mlx_key_hook(game.win, key_handler, &game);
 	mlx_hook(game.win, DESTROY_NOTIFY, STRUCTURE_NOTIFY_MASK, leave, &game);
