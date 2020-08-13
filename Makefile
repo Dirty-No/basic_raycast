@@ -6,7 +6,7 @@
 #    By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/11/05 10:47:14 by smaccary          #+#    #+#              #
-#    Updated: 2020/08/13 00:11:29 by smaccary         ###   ########.fr        #
+#    Updated: 2020/08/13 20:14:21 by smaccary         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -52,7 +52,7 @@ ifeq ($(UNAME),Darwin)
 	LINKS += -L$(MLX_PATH)/
 	FRAMEWORKS += -framework OpenGL -framework Appkit
 	INCLUDES += -I$(MLX_OPENGL_PATH)
-	LOAD_DYLIB = install_name_tool -change $(MLX_NAME) $(DIR)/$(MLX_LIB) $(NAME)
+	LOAD_DYLIB = install_name_tool -change $(MLX_NAME) $(MLX_LIB) $(NAME)
 endif
 
 ifeq ($(UNAME),Linux)

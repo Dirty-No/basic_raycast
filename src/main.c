@@ -6,7 +6,7 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/06 15:53:41 by smaccary          #+#    #+#             */
-/*   Updated: 2020/08/13 15:47:15 by smaccary         ###   ########.fr       */
+/*   Updated: 2020/08/13 21:00:37 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,14 +88,14 @@ int		get_text_color(int wall_size, int y, t_ray *ray, t_data *text)
 */
 #include <stdio.h>
 int		get_side(t_ray *ray)
-{
-	double	hit_x;
-	double	hit_y;
+{	
+	double hit_x;
+	double hit_y;
 
-	hit_x = fmod(ray->x * 2, 2);
-	hit_y = fmod(ray->y * 2, 2);
-	//printf("x %lf y %lf\n", hit_x, hit_y);
-	return ((0 <= hit_y && hit_y <= 0.01) || (0.99 <= hit_y && hit_y <= 1));
+	hit_x = fmod(ray->x, 1);
+	hit_y = fmod(ray->y, 1);
+	//printf("%lf %lf\n", fmod(ray->x, 1), fmod(ray->y, 1));
+	return ((0.5 < hit_x && hit_x < 0.5 + 0.1 * RAYCAST_CLOSE_STEP));
 }
 
 void	draw_col(t_data *data, t_ray *ray, int col, int color)
@@ -137,11 +137,13 @@ void	raycast(t_game *game)
 
 	ray.dir_x = game->dir_x;
 	ray.dir_y = game->dir_y;
+	ray.origin_x = game->x;
+	ray.origin_y = game->y;
 	rotate_vect(&ray.dir_x, &ray.dir_y, -FOV / 2);
 	while (++col < W_WIDTH)
 	{
-		ray.x = game->x;
-		ray.y = game->y;
+		ray.x = ray.origin_x;
+		ray.y = ray.origin_y;
 		ray.step_x = ray.dir_x * RAY_STEP;
 		ray.step_y = ray.dir_y * RAY_STEP;
 		while (!get_wall(ray.x, ray.y))
@@ -160,6 +162,8 @@ void	raycast(t_game *game)
 				ray.y += ray.step_y;
 			}
 		}
+		ray.x -= ray.step_x;
+		ray.y -= ray.step_y;
 		ray.dist = my_dist(game->x, game->y, ray.x, ray.y);
 		draw_col(game->scene_ptr, &ray, col, rgb[get_wall(ray.x, ray.y)]);
 		rotate_vect(&ray.dir_x, &ray.dir_y, ANGLE_INC);
@@ -215,12 +219,12 @@ int		main(void)
 	t_game	game;
 	
 	game = (t_game){0};
-	game.x = mapWidth / 2;
-	game.y = mapHeight / 2;
+	game.x = 5;
+	game.y = 5;
 	init_display(&game);
 	draw_grid(game.scene, 0xFF);
 	draw_grid(game.scene + 1, 0xFF0000);
-	game.dir_x = 1;
+	game.dir_x = -1;
 	game.dir_y = 0;
 	mlx_do_key_autorepeaton(game.mlx);
 	init_keys(game.keys);

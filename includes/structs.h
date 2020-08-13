@@ -6,7 +6,7 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/13 00:06:44 by smaccary          #+#    #+#             */
-/*   Updated: 2020/08/13 15:10:43 by smaccary         ###   ########.fr       */
+/*   Updated: 2020/08/13 19:55:58 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,8 @@ typedef struct s_ray
 {
     double		x;
 	double		y;
+	double			origin_x;
+	double			origin_y;
 	double		dir_x;
 	double 		dir_y;
 	double		step_x;
