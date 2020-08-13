@@ -6,7 +6,7 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/06 15:53:41 by smaccary          #+#    #+#             */
-/*   Updated: 2020/08/14 00:10:39 by smaccary         ###   ########.fr       */
+/*   Updated: 2020/08/14 00:39:53 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,7 +162,7 @@ void	raycast(t_game *game)
 			ray.y += ray.step_y; 
 		}
 		ray.side = !get_wall(ray.x - ray.step_x, ray.y);
-		ray.dist = my_dist(game->x, game->y, ray.x, ray.y);
+		ray.dist = cos((double)ANGLE_INC * (double)(col - W_HEIGHT / 2)) * my_dist(game->x, game->y, ray.x, ray.y);
 		draw_col(game->scene_ptr, &ray, col, rgb[get_wall(ray.x, ray.y)]);
 		rotate_vect(&ray.dir_x, &ray.dir_y, ANGLE_INC);
 	}
