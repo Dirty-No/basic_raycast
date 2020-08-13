@@ -6,7 +6,7 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/12 00:24:34 by smaccary          #+#    #+#             */
-/*   Updated: 2020/08/12 04:23:28 by smaccary         ###   ########.fr       */
+/*   Updated: 2020/08/13 00:27:07 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,9 +72,9 @@ void	minimap(t_game *game)
 	{
 		x = -1;
 		while (++x < mapWidth)
-			fill_cell(&(game->minimap), x, y, rgb[worldMap[y][x]]);
+			fill_cell(game->minimap_ptr, x, y, rgb[worldMap[y][x]]);
 	}
-	//fill_cell(&(game->minimap), game->x, game->y, 0xFF0000);
+	//fill_cell(game->minimap_ptr, game->x, game->y, 0xFF0000);
 }
 
 void    get_grid_coord(double x, double y, double *x_grid, double *y_grid)
@@ -131,8 +131,8 @@ void    draw_fov(t_game *game)
 	i = -1;
 	while (++i < 100)
 	{
-		my_pixel_put(&(game->minimap), (int)x1, (int)y1, 0xFFFFFF);
-		my_pixel_put(&(game->minimap), (int)x2, (int)y2, 0xFFFFFF);
+		my_pixel_put(game->minimap_ptr, (int)x1, (int)y1, 0xFFFFFF);
+		my_pixel_put(game->minimap_ptr, (int)x2, (int)y2, 0xFFFFFF);
 		x1 += dir1[0];
 		y1 += dir1[1];
 		x2 += dir2[0];

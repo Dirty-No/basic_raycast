@@ -6,7 +6,7 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/12 00:29:26 by smaccary          #+#    #+#             */
-/*   Updated: 2020/08/12 00:29:26 by smaccary         ###   ########.fr       */
+/*   Updated: 2020/08/13 00:23:53 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,11 @@ void	*refresh(t_game *game)
 	|| (double)(clock() - t0) > (double)CLOCKS_PER_SEC / (double)FRAME_CAP))
 	{
 		mlx_put_image_to_window(game->mlx, game->win,
-								game->img_ptr->mlx_img, 0, 0);
-        mlx_put_image_to_window(game->mlx, game->win, game->minimap.mlx_img, 0, 0);
-		game->img_ptr = game->img + i++ % 2;
+								game->scene_ptr->mlx_img, 0, 0);
+        mlx_put_image_to_window(game->mlx, game->win, game->minimap_ptr->mlx_img, 0, 0);
+		i = (i + 1) % 2;
+		game->scene_ptr = game->scene + i;
+		game->minimap_ptr = game->minimap + i;
 		t0 = clock();
 		game->frame_ready = 0;
 	}

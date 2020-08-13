@@ -6,7 +6,7 @@
 #    By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/11/05 10:47:14 by smaccary          #+#    #+#              #
-#    Updated: 2020/08/08 13:56:53 by smaccary         ###   ########.fr        #
+#    Updated: 2020/08/13 00:11:29 by smaccary         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -73,7 +73,7 @@ ifeq ($(UNAME),MINGW64_NT-10.0)
 	LOAD_DYLIB = cp $(MLX_PATH)/*.dll ./
 endif
 
-SRC = $(addprefix $(DIRSRC)/, main.c grid.c init.c frontend.c my_math.c)
+SRC = $(addprefix $(DIRSRC)/, main.c grid.c init.c frontend.c my_math.c keys.c cleanup.c)
 
 OBJDIR = obj
 
