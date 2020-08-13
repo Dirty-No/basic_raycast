@@ -6,7 +6,7 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/06 15:53:41 by smaccary          #+#    #+#             */
-/*   Updated: 2020/08/13 23:40:02 by smaccary         ###   ########.fr       */
+/*   Updated: 2020/08/14 00:10:39 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int worldMap[mapWidth][mapHeight]=
   {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,3,0,0,0,3,0,0,0,1},
   {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,2,2,0,2,2,0,0,0,0,3,0,3,0,3,0,0,0,1},
+  {1,0,0,0,0,0,2,2,0,2,0,0,0,0,0,3,0,3,0,3,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
@@ -115,11 +115,11 @@ void	draw_col(t_data *data, t_ray *ray, int col, int color)
 	while (++i < W_HEIGHT)
 	{
 		if (0 <= i && i < start_y)
-			my_pixel_put(data, col, i, ROOF_COLOR);
+			my_pixel_put(data, col, i, add_shade(ROOF_COLOR, (double)(i * 2) /(double)W_HEIGHT));
 		else if (start_y <= i && i <= end_y)
 			my_pixel_put(data, col, i, add_shade(ray->side ? add_shade(color, 0.5) : color, 1 - (double)wall_size / (2.0 * (double)W_HEIGHT)));
 		else if (end_y < i && i < W_HEIGHT)
-			my_pixel_put(data, col, i, FLOOR_COLOR);
+			my_pixel_put(data, col, i, add_shade(FLOOR_COLOR, (double)((W_HEIGHT - i) * 2) /(double)W_HEIGHT));
 	}
 }
 
@@ -152,7 +152,8 @@ void	raycast(t_game *game)
 			get_grid_coord(ray.x, ray.y, &pxl_x, &pxl_y);
 			my_pixel_put(game->minimap_ptr, pxl_x, pxl_y, 0xFFFFFF);
 			if (get_wall(ray.x + ray.step_x, ray.y + ray.step_y)
-			|| get_wall(ray.x + ray.step_x / 2, ray.y + ray.step_y / 2))
+			|| get_wall(ray.x + ray.step_x, ray.y)
+			|| get_wall(ray.x, ray.y + ray.step_y))
 			{
 				ray.step_x = ray.dir_x * RAYCAST_CLOSE_STEP;
 				ray.step_y = ray.dir_y * RAYCAST_CLOSE_STEP;
@@ -161,8 +162,6 @@ void	raycast(t_game *game)
 			ray.y += ray.step_y; 
 		}
 		ray.side = !get_wall(ray.x - ray.step_x, ray.y);
-		//ray.x -= ray.step_x;
-		//ray.y -= ray.step_y;
 		ray.dist = my_dist(game->x, game->y, ray.x, ray.y);
 		draw_col(game->scene_ptr, &ray, col, rgb[get_wall(ray.x, ray.y)]);
 		rotate_vect(&ray.dir_x, &ray.dir_y, ANGLE_INC);

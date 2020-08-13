@@ -6,7 +6,7 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/06 15:55:40 by smaccary          #+#    #+#             */
-/*   Updated: 2020/08/13 20:59:39 by smaccary         ###   ########.fr       */
+/*   Updated: 2020/08/14 00:07:37 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@
 # define TURN_ANGLE 0.05
 
 # define RAY_STEP 1
-# define RAYCAST_CLOSE_STEP 0.0025
+# define RAYCAST_CLOSE_STEP 0.005
 
 # define ROOF_COLOR 0xAAAAAA
 # define FLOOR_COLOR 0xBBFFAA
