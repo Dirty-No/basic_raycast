@@ -6,7 +6,7 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/13 00:06:44 by smaccary          #+#    #+#             */
-/*   Updated: 2020/08/13 00:20:36 by smaccary         ###   ########.fr       */
+/*   Updated: 2020/08/13 15:10:43 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,5 +51,17 @@ typedef struct	s_game
 	t_key		keys[K_BUFF_SIZE];
 	int			frame_ready;
 }				t_game;
+
+typedef struct s_ray
+{
+    double		x;
+	double		y;
+	double		dir_x;
+	double 		dir_y;
+	double		step_x;
+	double		step_y;
+	double 		dist;
+}               t_ray;
+
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/06 15:53:41 by smaccary          #+#    #+#             */
-/*   Updated: 2020/08/13 02:34:04 by smaccary         ###   ########.fr       */
+/*   Updated: 2020/08/13 15:47:15 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,16 +41,73 @@ int worldMap[mapWidth][mapHeight]=
   {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
 };
 
-void	draw_col(t_data *data, int col, double dist, int wall_color)
+/*
+** void	draw_col(t_data *data, int col, double dist, int wall_color)
+** {
+** 	int	start_y;
+** 	int	end_y;
+** 	int	wall_size;
+** 	int	i;
+** 
+** 	if (dist == 0)
+** 		dist = 0.000000001;
+** 	wall_size = W_HEIGHT / dist;
+** 	start_y = W_HEIGHT / 2 - wall_size / 2;
+** 	end_y =  W_HEIGHT / 2 + wall_size / 2;
+** 	i = -1;
+** 	while (++i < W_HEIGHT)
+** 	{
+** 		if (0 <= i && i < start_y)
+** 			my_pixel_put(data, col, i, ROOF_COLOR);
+** 		else if (start_y <= i && i <= end_y)
+** 			my_pixel_put(data, col, i, wall_color);
+** 		else if (end_y < i && i < W_HEIGHT)
+** 			my_pixel_put(data, col, i, FLOOR_COLOR);
+** 	}
+** }
+*/
+
+/*
+int		get_text_color(int wall_size, int y, t_ray *ray, t_data *text)
+{
+	int	text_x;
+	int	wall_x;
+	int	side;
+	int	hit_x;
+	int	hit_y;
+
+	hit_x = fmod(ray->x, 1.01);
+	hit_y = fmod(ray->y, 1.01);
+	if ((0 <= hit_y && hit_y <= 0.05) || (0.95 <= hit_y && hit_y <= 1))
+	{
+		wall_x	
+	}
+	
+	wall_x = ray->x
+}
+*/
+#include <stdio.h>
+int		get_side(t_ray *ray)
+{
+	double	hit_x;
+	double	hit_y;
+
+	hit_x = fmod(ray->x * 2, 2);
+	hit_y = fmod(ray->y * 2, 2);
+	//printf("x %lf y %lf\n", hit_x, hit_y);
+	return ((0 <= hit_y && hit_y <= 0.01) || (0.99 <= hit_y && hit_y <= 1));
+}
+
+void	draw_col(t_data *data, t_ray *ray, int col, int color)
 {
 	int	start_y;
 	int	end_y;
 	int	wall_size;
 	int	i;
 
-	if (dist == 0)
-		dist = 0.000000001;
-	wall_size = W_HEIGHT / dist;
+	if (ray->dist == 0)
+		ray->dist = 0.000000001;
+	wall_size = W_HEIGHT / ray->dist;
 	start_y = W_HEIGHT / 2 - wall_size / 2;
 	end_y =  W_HEIGHT / 2 + wall_size / 2;
 	i = -1;
@@ -59,7 +116,7 @@ void	draw_col(t_data *data, int col, double dist, int wall_color)
 		if (0 <= i && i < start_y)
 			my_pixel_put(data, col, i, ROOF_COLOR);
 		else if (start_y <= i && i <= end_y)
-			my_pixel_put(data, col, i, wall_color);
+			my_pixel_put(data, col, i, (get_side(ray) ? 0 : color));
 		else if (end_y < i && i < W_HEIGHT)
 			my_pixel_put(data, col, i, FLOOR_COLOR);
 	}
@@ -72,46 +129,40 @@ int	get_wall(double x, double y)
 
 void	raycast(t_game *game)
 {
-	double		x;
-	double		y;
-	double		dir_x;
-	double 		dir_y;
-	double		step_x;
-	double		step_y;
-	double 		dist;
+	t_ray		ray;
 	double		pxl_x;
 	double		pxl_y;
 	static int	rgb[6] = {0x0,0xFF0000,0xFF00,0xFF, 0xFFFF, 0xFF00FF};
 	int			col = -1;
 
-	dir_x = game->dir_x;
-	dir_y = game->dir_y;
-	rotate_vect(&dir_x, &dir_y, -FOV / 2);
+	ray.dir_x = game->dir_x;
+	ray.dir_y = game->dir_y;
+	rotate_vect(&ray.dir_x, &ray.dir_y, -FOV / 2);
 	while (++col < W_WIDTH)
 	{
-		x = game->x;
-		y = game->y;
-		step_x = dir_x * RAY_STEP;
-		step_y = dir_y * RAY_STEP;
-		while (!get_wall(x, y))
+		ray.x = game->x;
+		ray.y = game->y;
+		ray.step_x = ray.dir_x * RAY_STEP;
+		ray.step_y = ray.dir_y * RAY_STEP;
+		while (!get_wall(ray.x, ray.y))
 		{
-			get_grid_coord(x, y, &pxl_x, &pxl_y);
+			get_grid_coord(ray.x, ray.y, &pxl_x, &pxl_y);
 			my_pixel_put(game->minimap_ptr, pxl_x, pxl_y, 0xFFFFFF);
-			if (get_wall(x + step_x, y + step_y)
-			|| get_wall(x + step_x / 2, y + step_y / 2))
+			if (get_wall(ray.x + ray.step_x, ray.y + ray.step_y)
+			|| get_wall(ray.x + ray.step_x / 2, ray.y + ray.step_y / 2))
 			{
-				x += step_x * RAYCAST_CLOSE_STEP;
-				y += step_y * RAYCAST_CLOSE_STEP;	
+				ray.x += ray.step_x * RAYCAST_CLOSE_STEP;
+				ray.y += ray.step_y * RAYCAST_CLOSE_STEP;	
 			}
 			else
 			{
-				x += step_x;
-				y += step_y;
+				ray.x += ray.step_x;
+				ray.y += ray.step_y;
 			}
 		}
-		dist = my_dist(game->x, game->y, x, y);
-		draw_col(game->scene_ptr, col, dist, rgb[get_wall(x ,y)]);
-		rotate_vect(&dir_x, &dir_y, ANGLE_INC);
+		ray.dist = my_dist(game->x, game->y, ray.x, ray.y);
+		draw_col(game->scene_ptr, &ray, col, rgb[get_wall(ray.x, ray.y)]);
+		rotate_vect(&ray.dir_x, &ray.dir_y, ANGLE_INC);
 	}
 }
 
