@@ -6,7 +6,7 @@
 #    By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/11/05 10:47:14 by smaccary          #+#    #+#              #
-#    Updated: 2020/08/13 20:14:21 by smaccary         ###   ########.fr        #
+#    Updated: 2020/08/14 02:57:05 by smaccary         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ CC = gcc
 
 HEADERS_PATH = ./includes/
 
-INCLUDES = -I$(HEADERS_PATH) 
+INCLUDES = -I$(HEADERS_PATH) -Ilibft
 
 CFLAGS = -Wall -Wextra -Werror -g3
 RM = rm -rf

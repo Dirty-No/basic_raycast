@@ -6,7 +6,7 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/06 15:55:40 by smaccary          #+#    #+#             */
-/*   Updated: 2020/08/14 00:07:37 by smaccary         ###   ########.fr       */
+/*   Updated: 2020/08/14 03:29:16 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@
 
 # define FRAME_CAP	0
 
-# define CELL_SIZE 12
+# define CELL_SIZE 8
 
 void    draw_fov(t_game *game);
 void	draw_grid(t_data *data, int color);

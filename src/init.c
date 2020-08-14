@@ -6,11 +6,12 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/12 00:26:18 by smaccary          #+#    #+#             */
-/*   Updated: 2020/08/13 00:25:24 by smaccary         ###   ########.fr       */
+/*   Updated: 2020/08/14 03:34:59 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
+#include "libftprintf.h"
 
 void    init_data(t_data *data, void *mlx, int w, int h)
 {
@@ -31,5 +32,8 @@ void	init_display(t_game *game)
 	init_data(game->scene + 1, game->mlx, W_WIDTH, W_HEIGHT);
     init_data(game->minimap, game->mlx, mapWidth * CELL_SIZE, mapHeight * CELL_SIZE);
 	init_data(game->minimap + 1, game->mlx, mapWidth * CELL_SIZE, mapHeight * CELL_SIZE);
+	init_data(game->text, game->mlx, 64, 64);
+	ft_memset(game->text->addr, 0xFF ,game->text->width * game->text->height * game->text->bits_per_pixel / 8);
+	draw_grid(game->text, 0xFF00FF);
 	game->frame_ready = 0;
 }

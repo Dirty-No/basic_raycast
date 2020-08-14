@@ -6,7 +6,7 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/06 15:53:41 by smaccary          #+#    #+#             */
-/*   Updated: 2020/08/14 00:39:53 by smaccary         ###   ########.fr       */
+/*   Updated: 2020/08/14 03:38:26 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,23 @@ int		add_shade(int color, double shade)
 	return (color);
 }
 
-void	draw_col(t_data *data, t_ray *ray, int col, int color)
+int		get_text_color(t_data *text, int wall_size, int y, t_ray *ray)
+{
+	unsigned int color;
+	int	wall_x;
+	
+	(void)wall_size;
+	wall_x = (int)(fmod((ray->side ? ray->y : ray->x) + 0.5, 1) * (double)text->width);
+	y = y * text->height / wall_size;
+	if (wall_x > text->width)
+		printf("WIDTH  %d\n", wall_x);
+	if (y > text->height)
+		printf("HEIGHT  %d\n", y);
+	color = *(unsigned int *)(text->addr + y * text->line_length + wall_x * (text->bits_per_pixel / 8));
+	return (color);
+}
+
+void	draw_col(t_data *data, t_ray *ray, int col, t_data *text)
 {
 	int	start_y;
 	int	end_y;
@@ -117,7 +133,7 @@ void	draw_col(t_data *data, t_ray *ray, int col, int color)
 		if (0 <= i && i < start_y)
 			my_pixel_put(data, col, i, add_shade(ROOF_COLOR, (double)(i * 2) /(double)W_HEIGHT));
 		else if (start_y <= i && i <= end_y)
-			my_pixel_put(data, col, i, add_shade(ray->side ? add_shade(color, 0.5) : color, 1 - (double)wall_size / (2.0 * (double)W_HEIGHT)));
+			my_pixel_put(data, col, i, get_text_color(text, end_y - start_y, i - start_y, ray));
 		else if (end_y < i && i < W_HEIGHT)
 			my_pixel_put(data, col, i, add_shade(FLOOR_COLOR, (double)((W_HEIGHT - i) * 2) /(double)W_HEIGHT));
 	}
@@ -133,7 +149,7 @@ void	raycast(t_game *game)
 	t_ray		ray;
 	double		pxl_x;
 	double		pxl_y;
-	static int	rgb[6] = {0x0,0xFF0000,0xFF00,0xFF, 0xFFFF, 0xFF00FF};
+	//static int	rgb[6] = {0x0,0xFF0000,0xFF00,0xFF, 0xFFFF, 0xFF00FF};
 	int			col = -1;
 
 	ray.dir_x = game->dir_x;
@@ -163,7 +179,7 @@ void	raycast(t_game *game)
 		}
 		ray.side = !get_wall(ray.x - ray.step_x, ray.y);
 		ray.dist = cos((double)ANGLE_INC * (double)(col - W_HEIGHT / 2)) * my_dist(game->x, game->y, ray.x, ray.y);
-		draw_col(game->scene_ptr, &ray, col, rgb[get_wall(ray.x, ray.y)]);
+		draw_col(game->scene_ptr, &ray, col, game->minimap_ptr);
 		rotate_vect(&ray.dir_x, &ray.dir_y, ANGLE_INC);
 	}
 }

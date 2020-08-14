@@ -6,7 +6,7 @@
 /*   By: smaccary <smaccary@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/08/13 00:06:44 by smaccary          #+#    #+#             */
-/*   Updated: 2020/08/13 22:41:26 by smaccary         ###   ########.fr       */
+/*   Updated: 2020/08/14 02:51:08 by smaccary         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ typedef struct	s_game
 	t_data  	*scene_ptr;
 	t_data		minimap[2];
     t_data      *minimap_ptr;
+	t_data		text[2];
 	t_key		keys[K_BUFF_SIZE];
 	int			frame_ready;
 }				t_game;
